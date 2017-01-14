@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name">Activity Tasks</string>
+    <string name="act_default">Default Activity</string>
+    <string name="act_single_task">Single Task Activity</string>
+    <string name="act_single_top">Single Top Activity</string>
+    <string name="act_single_instance">Single Instance Activity</string>
+
+</resources>

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--suppress DeprecatedClassUsageInspection-->
+    <!--suppress DeprecatedClassUsageInspection | not true, this is a valid KitKat permission-->
     <uses-permission android:name="android.permission.GET_TASKS" />
 
     <application

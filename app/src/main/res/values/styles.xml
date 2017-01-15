@@ -6,4 +6,21 @@
         <item name="colorAccent">@color/color_accent</item>
     </style>
 
+    <style name="AppTheme.DefaultTheme" />
+
+    <style name="AppTheme.SingleTaskTheme">
+        <item name="colorPrimary">#FF90D070</item>
+        <item name="colorPrimaryDark">#FF80B060</item>
+    </style>
+
+    <style name="AppTheme.SingleTopTheme">
+        <item name="colorPrimary">#FF9070D0</item>
+        <item name="colorPrimaryDark">#FF806070</item>
+    </style>
+
+    <style name="AppTheme.SingleInstanceTheme">
+        <item name="colorPrimary">#FFD08070</item>
+        <item name="colorPrimaryDark">#FFA07060</item>
+    </style>
+
 </resources>

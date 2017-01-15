@@ -3,6 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!--suppress DeprecatedClassUsageInspection-->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -13,14 +16,48 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".activities.DefaultTaskActivity"
-            android:launchMode="standard">
+            android:name=".activities.DefaultActivity"
+            android:label="@string/act_default_label"
+            android:launchMode="standard"
+            android:theme="@style/AppTheme.DefaultTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activities.SingleTaskActivity"
+            android:label="@string/act_single_task_label"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.SingleTaskTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.SingleTopActivity"
+            android:label="@string/act_single_top_label"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.SingleTopTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.SingleInstanceActivity"
+            android:label="@string/act_single_instance_label"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.SingleInstanceTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

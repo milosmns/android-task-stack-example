@@ -147,15 +147,18 @@ abstract class GenericTaskActivity : AppCompatActivity() {
         }
 
         val builder = StringBuilder(taskList.size)
-        taskList.forEach {
-            val colorHash = Utils.toHex(it.id)
+        for ((i, task) in taskList.withIndex()) {
+            val colorHash = Utils.toHex(task.id)
             val taskId = "<font color=\"#$colorHash\"><b>#$colorHash</b></font>"
-            val baseName = it.baseActivity.shortClassName
-            val topName = it.topActivity.shortClassName
-            val taskDescription = getString(R.string.stack_item_template, taskId, baseName, topName, it.numActivities, it.numRunning)
+            val baseName = task.baseActivity.shortClassName
+            val topName = task.topActivity.shortClassName
+            val taskDescription = getString(R.string.stack_item_template, taskId, baseName, topName, task.numActivities, task.numRunning)
             builder.append("-")
             builder.append(taskDescription.replace("\n", "<br>"))
-            builder.append("<br><br>")
+            // add new lines only on middle tasks
+            if (i < taskList.size - 1) {
+                builder.append("<br><br>")
+            }
         }
         return builder.toString()
     }

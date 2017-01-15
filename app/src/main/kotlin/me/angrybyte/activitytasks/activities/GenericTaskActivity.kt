@@ -11,9 +11,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_layout.*
 import me.angrybyte.activitytasks.R
-import me.angrybyte.activitytasks.utils.Utils
-import me.angrybyte.activitytasks.utils.findInIntent
-import me.angrybyte.activitytasks.utils.getId
+import me.angrybyte.activitytasks.utils.*
 
 /**
  * Superclass of all app's activities. Displays everything that's needed on the UI,
@@ -26,18 +24,30 @@ abstract class GenericTaskActivity : AppCompatActivity() {
     private val KEY_ORIGIN_ID = "KEY_ORIGIN_ID"
     private val KEY_ORIGIN_TASK_ID = "KEY_ORIGIN_TASK_ID"
 
+    private var reInit: Boolean = false
+
     /* Activity stuff */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_layout)
 
-        @Suppress("DEPRECATION")
+        @Suppress("DEPRECATION") // not true, this is a valid KitKat permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.GET_TASKS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.GET_TASKS), PERMISSION_REQUEST_TASKS)
         } else {
             setupActivity()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (reInit) setupActivity()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        reInit = true
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -71,12 +81,27 @@ abstract class GenericTaskActivity : AppCompatActivity() {
      * Initializes all views.
      */
     private fun setupActivity() {
-        // update details from intent and task info
-        descriptionText.text = getString(
-                R.string.description_template,
-                getActivityTitle(), getId(), Utils.hexCaps(taskId), getOriginActivity(), getOriginActivityId(), getOriginTaskId()
+        // update stack details from the current intent and task info
+        stackInfo.setHtml(getTaskStackHtml())
+
+        // update current activity info
+        val thisActTitle = getActivityTitle() // template already has 'Activity'
+        val thisActHash = "#${getId()}"
+        val thisTaskHash = "#${Utils.toHex(taskId)}"
+        val originActName = getOriginActivity().replace("Activity", "")
+        val originActHash = "#${getOriginActivityId()}"
+        val originTaskHash = "#${getOriginTaskId()}"
+        descriptionText.text = getString(R.string.description_template,
+                thisActTitle, thisActHash, thisTaskHash, originActName, originActHash, originTaskHash
         )
-        stackInfo.text = getTaskStack()
+
+        // calculate colors and replace plain IDs with colored IDs
+        val launcherHash = "#${getString(R.string.activity_name_launcher)[0]}"
+        val originActColor = if (launcherHash == originActHash) 0xCCCCCC else Utils.parseHex(originActHash)
+        val originTaskColor = if (launcherHash == originTaskHash) 0xCCCCCC else Utils.parseHex(originTaskHash)
+        val replacements = arrayOf(thisActHash, thisTaskHash, originActHash, originTaskHash)
+        val colors = intArrayOf(hashCode(), taskId, originActColor, originTaskColor)
+        descriptionText.markText(replacements, colors)
 
         // assign click listeners for buttons so that they open the correct activities
         val classes = listOf(DefaultActivity::class.java, SingleTaskActivity::class.java, SingleTopActivity::class.java, SingleInstanceActivity::class.java)
@@ -86,7 +111,7 @@ abstract class GenericTaskActivity : AppCompatActivity() {
                 val intent = Intent(GenericTaskActivity@ this, classes[i])
                 intent.putExtra(KEY_ORIGIN_NAME, GenericTaskActivity@ this.javaClass.simpleName!!)
                 intent.putExtra(KEY_ORIGIN_ID, getId())
-                intent.putExtra(KEY_ORIGIN_TASK_ID, Utils.hexCaps(taskId))
+                intent.putExtra(KEY_ORIGIN_TASK_ID, Utils.toHex(taskId))
                 startActivity(intent)
             }
         }
@@ -110,11 +135,11 @@ abstract class GenericTaskActivity : AppCompatActivity() {
     private fun getOriginTaskId() = findInIntent(KEY_ORIGIN_TASK_ID, getString(R.string.activity_name_launcher)[0].toString())
 
     /**
-     * Tries to find the current task stack, if possible.
+     * Tries to find the current task stack, if possible. Outputs plain HTML text.
      */
-    @Suppress("DEPRECATION")
-    private fun getTaskStack(): String {
+    private fun getTaskStackHtml(): String {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        @Suppress("DEPRECATION") // valid call, even with Lollipop limitations
         val taskList = manager.getRunningTasks(10) // this may not work on Lollipop...
 
         if (taskList.isEmpty()) {
@@ -123,13 +148,14 @@ abstract class GenericTaskActivity : AppCompatActivity() {
 
         val builder = StringBuilder(taskList.size)
         taskList.forEach {
-            // Task @%1$s \"%2$s\", Base: %3$s, Top: %4$s, Total/Running: %5$d/%6$d
-            val taskId = Utils.hexCaps(it.id)
+            val colorHash = Utils.toHex(it.id)
+            val taskId = "<font color=\"#$colorHash\"><b>#$colorHash</b></font>"
             val baseName = it.baseActivity.shortClassName
             val topName = it.topActivity.shortClassName
+            val taskDescription = getString(R.string.stack_item_template, taskId, baseName, topName, it.numActivities, it.numRunning)
             builder.append("-")
-            builder.append(getString(R.string.stack_item_template, taskId, baseName, topName, it.numActivities, it.numRunning))
-            builder.append("\n\n")
+            builder.append(taskDescription.replace("\n", "<br>"))
+            builder.append("<br><br>")
         }
         return builder.toString()
     }

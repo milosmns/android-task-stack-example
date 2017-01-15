@@ -1,9 +1,9 @@
 <resources>
 
     <string name="app_name">Activity Tasks</string>
-    <string name="description_template">%1$s\n- Activity #%2$s\n- Task #%3$s\n\nStarted from:\n%4$s Activity #%5$s\n#%6$s Task</string>
+    <string name="description_template">Current:\n%1$s\n- Activity %2$s\n- Task %3$s\n\nOriginally started from:\n%4$s Activity %5$s\nTask %6$s</string>
     <string name="task_stack_template">Task stack:\n\n%s</string>
-    <string name="stack_item_template">Task #%1$s\nBase: %2$s\nTop: %3$s\nTotal/Running: %4$d/%5$d</string>
+    <string name="stack_item_template">Task %1$s\nBase: %2$s\nTop: %3$s\nTotal/Running: %4$d/%5$d</string>
     <string name="task_name_launcher">Launcher</string>
     <string name="activity_name_launcher">Launcher</string>
     <string name="stack_unknown">Stack unknown</string>
